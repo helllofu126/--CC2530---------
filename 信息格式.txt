@@ -1,0 +1,82 @@
+设备ID：标识传感器终端设备
+设备标识符：标识传感器（唯一）
+
+服务器：
+发送给客户端的数据：
+数据长度（4） type1  dh dl
+type:0x00  传感器数据
+     0xff  获取继电器状态
+
+发网关数据：
+0xff type H设备ID L设备ID 0x00
+ H设备ID:buffer[2] = (byte)(id >> 8);
+ L设备ID:buffer[3] = (byte)id;
+
+type 0x00 关灯 
+     0xff 开灯
+         0x01 获取传感器数值
+         0x02 获取继电器状态
+
+客户端发数据：
+数据长度（4+name.length:设备标识符）0xff type  0x00 name(设备标识符)
+获取数据库信息：REQALL：获取全部信息；ERQNME：获取设备标识符；REQCNT：获取设备ID
+		
+
+网关:
+向服务器发数据：
+isRelayStaues HID LID Hdata Ldata
+isRelayStaues 0x00传感器 0xff 继电器
+
+向终端发送数据：
+        /// <summary>
+        /// 数据中校验和位置
+        /// </summary>
+        private const int checkSumPos = 4;
+        /// <summary>
+        /// 数据长度
+        /// </summary>
+        private const int DataLength = 6;
+
+
+        cmd[2] = (byte)(deviceId >> 8);
+        cmd[3] = (byte)deviceId;
+        cmd[checkSumPos] = CheckSum(cmd, checkSumPos);
+
+             /// <summary>
+        /// 灯开命令，其 checkSumPos为0
+        /// </summary>
+        private byte[] cmdOnLight = {0xff,0xff,0,0,0 };
+        /// <summary>
+        /// 灯关闭命令，其checkSumPos为0
+        /// </summary>
+        private byte[] cmdOffLight = {0xff,0xaa,0,0,0 };
+        /// <summary>
+        /// 数据请求命令。
+        /// </summary>
+        private byte[] cmdRequstData = { 0xff, 0x00, 0, 0, 0 };
+
+        /// <summary>
+        /// 请求继电器状态命令
+        /// </summary>
+        private byte[] cmdRequestRelayStatus = { 0xff, 0x11, 0, 0, 0 };
+
+
+        /// <summary>
+        /// 发送命令
+        /// </summary>
+        /// <param name="cmd">命令</param>
+        /// <param name="deviceId">设备ID</param>
+        private void SendCmd(byte[] cmd,ushort deviceId)
+
+
+        /// <summary>
+        /// 获取继电器状态码
+        /// </summary>
+        /// <param name="deviceId">设备Id</param>
+        /// <returns>状态码</returns>
+        public ushort GetRelayStatus(ushort deviceId)
+
+
+终端发数据：
+ type1 Hdata Ldata HID LID checkSum
+
